@@ -1,0 +1,27 @@
+# Sección imprescindible donde se especifican los servicios que compondrán el entorno
+services: 
+  # Identificador o alias asignado a este servicio en particular
+  mongodb:
+    # Especifica la imagen oficial que se descargará desde Docker Hub
+    # Tras los dos puntos se indica la etiqueta; por regla general se aconseja la última versión estable
+    image: mongo:latest
+    # Nombre asignado al contenedor en ejecución para gestionarlo fácilmente mediante la CLI
+    container_name: mongodb_test
+    environment:
+      # Definición de los parámetros de configuración iniciales para el contenedor:
+      # credenciales de acceso principal y la base de datos que se creará por defecto
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: 1234  
+      MONGO_INITDB_DATABASE: mongodb_docker_test
+    # Mapeo de red: el valor de la izquierda es el puerto expuesto en el equipo anfitrión,
+    # y el de la derecha corresponde al puerto interno asignado por MongoDB
+    ports:
+      - "27000:27017"
+    # Configuración del almacenamiento para garantizar que la información perdure
+    # y no se pierda al detener o reiniciar el contenedor
+    volumes:
+      # Vincula el directorio interno /data/db del contenedor con un volumen gestionado por Docker,
+      # lo que permite almacenar los datos de forma permanente en la infraestructura del host
+      - mongo_data:/data/db
+volumes:
+  mongo_data:
