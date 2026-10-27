@@ -1,0 +1,18 @@
+$kind: http-request
+url: "{{baseUrl}}/api/categories"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "slug": "sin-nombre-{{categorySlug}}"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code is 422', () => pm.response.to.have.status(422));
+      pm.test('Validation error format', () => { const r = pm.response.json(); pm.expect(r.success).to.eql(false); pm.expect(r.error.code).to.eql('VALIDATION_ERROR'); });
+    language: text/javascript
+order: 5000

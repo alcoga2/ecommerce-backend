@@ -1,0 +1,9 @@
+$kind: collection
+description: Verificació local de l'API Ecommerce. Requereix el servidor a localhost:3000 i MongoDB local. Les credencials i dades són fictícies; aquesta col·lecció no conté secrets.
+variables:
+  productId: ""
+  categoryId: ""
+  categorySlug: ""
+  userId: ""
+  userEmail: ""
+  testPassword: ""

@@ -1,0 +1,12 @@
+name: Ecommerce Local
+values:
+  - key: baseUrl
+    value: 'http://localhost:3000'
+  - key: categorySlug
+    value: ''
+  - key: userEmail
+    value: ''
+  - key: testPassword
+    value: ''
+  - key: userId
+    value: ''

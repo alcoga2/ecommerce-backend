@@ -5,7 +5,7 @@ services:
     #esto es la version de la imagen que tiene que descargar de docker hub
     # despues de los ":" va la version, de normal se deberia usar la latest o la ultima estable
     image: mongo:7
-
+    
     restart: always
     # esto es el nombre que tendra el contenedor, es decir, como vamos a llamarlo al momento de usar comandos y todo 
     container_name: mongodb_test_test

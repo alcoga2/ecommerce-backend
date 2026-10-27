@@ -1,0 +1,15 @@
+$kind: http-request
+url: "{{baseUrl}}/api/users?name=Usuario&sort=-createdAt&page=1&limit=10"
+method: GET
+queryParams:
+  name: Usuario
+  sort: -createdAt
+  page: "1"
+  limit: "10"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status code is 200', () => pm.response.to.have.status(200));
+      pm.test('No user exposes passwordHash', () => pm.response.json().data.forEach(user => pm.expect(user).to.not.have.property('passwordHash')));
+    language: text/javascript
+order: 2000

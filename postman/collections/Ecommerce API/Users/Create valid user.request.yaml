@@ -1,0 +1,28 @@
+$kind: http-request
+url: "{{baseUrl}}/api/users"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "name": "Usuario Postman",
+      "email": "{{userEmail}}",
+      "password": "{{testPassword}}"
+    }
+scripts:
+  - type: beforeRequest
+    code: |-
+      pm.collectionVariables.set('userEmail', 'postman-' + Date.now() + '@example.test');
+      pm.collectionVariables.set('testPassword', 'postman-test-' + Date.now() + '-Password');
+    language: text/javascript
+  - type: afterResponse
+    code: |-
+      pm.test('Status code is 201', () => pm.response.to.have.status(201));
+      pm.test('Response is JSON', () => pm.response.to.be.json);
+      pm.test('No expone passwordHash', () => pm.expect(pm.response.json().data).to.not.have.property('passwordHash'));
+      pm.test('No expone password', () => pm.expect(pm.response.json().data).to.not.have.property('password'));
+      if (pm.response.code === 201) pm.collectionVariables.set('userId', pm.response.json().data._id);
+    language: text/javascript
+order: 1000

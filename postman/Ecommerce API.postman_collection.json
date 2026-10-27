@@ -1,0 +1,129 @@
+{
+  "info": {
+    "_postman_id": "4e9c4752-fab0-4b12-9e5d-66ed124a4602",
+    "name": "Ecommerce API",
+    "description": "Verificació local de l'API Ecommerce. Requereix el servidor a localhost:3000 i MongoDB local. Les credencials i dades són fictícies; aquesta col·lecció no conté secrets.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Products",
+      "item": [
+        {
+          "name": "Create product",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status code is 201', () => pm.response.to.have.status(201));", "pm.test('Response is JSON', () => pm.response.to.be.json);", "if (pm.response.code === 201) pm.collectionVariables.set('productId', pm.response.json().data._id);"] } }],
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"name\": \"Figura de prueba\",\n  \"description\": \"Producto ficticio para verificar la API\",\n  \"price\": 29.99,\n  \"stock\": 5\n}", "options": { "raw": { "language": "json" } } }, "url": { "raw": "{{baseUrl}}/api/products", "host": ["{{baseUrl}}"], "path": ["api", "products"] } }
+        },
+        {
+          "name": "List products",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status code is 200', () => pm.response.to.have.status(200));", "pm.test('Response is JSON', () => pm.response.to.be.json);"] } }],
+          "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/api/products", "host": ["{{baseUrl}}"], "path": ["api", "products"] } }
+        },
+        {
+          "name": "Get product by ID",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status code is 200', () => pm.response.to.have.status(200));", "pm.test('Response is JSON', () => pm.response.to.be.json);"] } }],
+          "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/api/products/{{productId}}", "host": ["{{baseUrl}}"], "path": ["api", "products", "{{productId}}"] } }
+        },
+        {
+          "name": "Update product",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status code is 200', () => pm.response.to.have.status(200));", "pm.test('Response is JSON', () => pm.response.to.be.json);"] } }],
+          "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"price\": 34.99,\n  \"stock\": 4\n}", "options": { "raw": { "language": "json" } } }, "url": { "raw": "{{baseUrl}}/api/products/{{productId}}", "host": ["{{baseUrl}}"], "path": ["api", "products", "{{productId}}"] } }
+        },
+        {
+          "name": "Delete product",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status code is 204', () => pm.response.to.have.status(204));"] } }],
+          "request": { "method": "DELETE", "header": [], "url": { "raw": "{{baseUrl}}/api/products/{{productId}}", "host": ["{{baseUrl}}"], "path": ["api", "products", "{{productId}}"] } }
+        }
+      ]
+    },
+    {
+      "name": "Categories",
+      "item": [
+        {
+          "name": "Create valid category",
+          "event": [
+            { "listen": "prerequest", "script": { "type": "text/javascript", "exec": ["pm.collectionVariables.set('categorySlug', 'postman-' + Date.now());"] } },
+            { "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status code is 201', () => pm.response.to.have.status(201));", "pm.test('Response is JSON', () => pm.response.to.be.json);", "if (pm.response.code === 201) pm.collectionVariables.set('categoryId', pm.response.json().data._id);"] } }
+          ],
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"name\": \"Categoría de prueba\",\n  \"slug\": \"{{categorySlug}}\",\n  \"description\": \"Categoría ficticia para Postman\",\n  \"active\": true\n}", "options": { "raw": { "language": "json" } } }, "url": { "raw": "{{baseUrl}}/api/categories", "host": ["{{baseUrl}}"], "path": ["api", "categories"] } }
+        },
+        {
+          "name": "List categories",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status code is 200', () => pm.response.to.have.status(200));", "pm.test('Includes pagination', () => pm.expect(pm.response.json()).to.have.property('pagination'));"] } }],
+          "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/api/categories?active=true&name=Categor%C3%ADa&sort=name&page=1&limit=10", "host": ["{{baseUrl}}"], "path": ["api", "categories"], "query": [{ "key": "active", "value": "true" }, { "key": "name", "value": "Categoría" }, { "key": "sort", "value": "name" }, { "key": "page", "value": "1" }, { "key": "limit", "value": "10" }] } }
+        },
+        {
+          "name": "Get category by ID",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status code is 200', () => pm.response.to.have.status(200));"] } }],
+          "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/api/categories/{{categoryId}}", "host": ["{{baseUrl}}"], "path": ["api", "categories", "{{categoryId}}"] } }
+        },
+        {
+          "name": "Update category",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status code is 200', () => pm.response.to.have.status(200));"] } }],
+          "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"description\": \"Categoría actualizada desde Postman\"\n}", "options": { "raw": { "language": "json" } } }, "url": { "raw": "{{baseUrl}}/api/categories/{{categoryId}}", "host": ["{{baseUrl}}"], "path": ["api", "categories", "{{categoryId}}"] } }
+        },
+        {
+          "name": "Reject category without name",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status code is 422', () => pm.response.to.have.status(422));", "pm.test('Validation error format', () => { const r = pm.response.json(); pm.expect(r.success).to.eql(false); pm.expect(r.error.code).to.eql('VALIDATION_ERROR'); });"] } }],
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"slug\": \"sin-nombre-{{categorySlug}}\"\n}", "options": { "raw": { "language": "json" } } }, "url": { "raw": "{{baseUrl}}/api/categories", "host": ["{{baseUrl}}"], "path": ["api", "categories"] } }
+        },
+        {
+          "name": "Reject duplicate category slug",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status code is 409', () => pm.response.to.have.status(409));", "pm.test('Duplicate error format', () => pm.expect(pm.response.json().error.code).to.eql('DUPLICATE_KEY_ERROR'));"] } }],
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"name\": \"Categoría duplicada\",\n  \"slug\": \"{{categorySlug}}\"\n}", "options": { "raw": { "language": "json" } } }, "url": { "raw": "{{baseUrl}}/api/categories", "host": ["{{baseUrl}}"], "path": ["api", "categories"] } }
+        },
+        {
+          "name": "Delete category",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status code is 204', () => pm.response.to.have.status(204));"] } }],
+          "request": { "method": "DELETE", "header": [], "url": { "raw": "{{baseUrl}}/api/categories/{{categoryId}}", "host": ["{{baseUrl}}"], "path": ["api", "categories", "{{categoryId}}"] } }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Create valid user",
+          "event": [
+            { "listen": "prerequest", "script": { "type": "text/javascript", "exec": ["pm.collectionVariables.set('userEmail', 'postman-' + Date.now() + '@example.test');", "pm.collectionVariables.set('testPassword', 'postman-test-' + Date.now() + '-Password');"] } },
+            { "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status code is 201', () => pm.response.to.have.status(201));", "pm.test('Response is JSON', () => pm.response.to.be.json);", "pm.test('No expone passwordHash', () => pm.expect(pm.response.json().data).to.not.have.property('passwordHash'));", "pm.test('No expone password', () => pm.expect(pm.response.json().data).to.not.have.property('password'));", "if (pm.response.code === 201) pm.collectionVariables.set('userId', pm.response.json().data._id);"] } }
+          ],
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"name\": \"Usuario Postman\",\n  \"email\": \"{{userEmail}}\",\n  \"password\": \"{{testPassword}}\"\n}", "options": { "raw": { "language": "json" } } }, "url": { "raw": "{{baseUrl}}/api/users", "host": ["{{baseUrl}}"], "path": ["api", "users"] } }
+        },
+        {
+          "name": "List users",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status code is 200', () => pm.response.to.have.status(200));", "pm.test('No user exposes passwordHash', () => pm.response.json().data.forEach(user => pm.expect(user).to.not.have.property('passwordHash')));"] } }],
+          "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/api/users?name=Usuario&sort=-createdAt&page=1&limit=10", "host": ["{{baseUrl}}"], "path": ["api", "users"], "query": [{ "key": "name", "value": "Usuario" }, { "key": "sort", "value": "-createdAt" }, { "key": "page", "value": "1" }, { "key": "limit", "value": "10" }] } }
+        },
+        {
+          "name": "Get user by ID",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status code is 200', () => pm.response.to.have.status(200));", "pm.test('No expone passwordHash', () => pm.expect(pm.response.json().data).to.not.have.property('passwordHash'));"] } }],
+          "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/api/users/{{userId}}", "host": ["{{baseUrl}}"], "path": ["api", "users", "{{userId}}"] } }
+        },
+        {
+          "name": "Update user",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status code is 200', () => pm.response.to.have.status(200));", "pm.test('No expone passwordHash', () => pm.expect(pm.response.json().data).to.not.have.property('passwordHash'));"] } }],
+          "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"name\": \"Usuario Postman actualizado\"\n}", "options": { "raw": { "language": "json" } } }, "url": { "raw": "{{baseUrl}}/api/users/{{userId}}", "host": ["{{baseUrl}}"], "path": ["api", "users", "{{userId}}"] } }
+        },
+        {
+          "name": "Reject duplicate user email",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status code is 409', () => pm.response.to.have.status(409));", "pm.test('Duplicate error format', () => pm.expect(pm.response.json().error.code).to.eql('DUPLICATE_KEY_ERROR'));"] } }],
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"name\": \"Usuario duplicado\",\n  \"email\": \"{{userEmail}}\",\n  \"password\": \"{{testPassword}}\"\n}", "options": { "raw": { "language": "json" } } }, "url": { "raw": "{{baseUrl}}/api/users", "host": ["{{baseUrl}}"], "path": ["api", "users"] } }
+        },
+        {
+          "name": "Delete user (soft delete)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status code is 200', () => pm.response.to.have.status(200));", "pm.test('User is deactivated', () => pm.expect(pm.response.json().data.active).to.eql(false));", "pm.test('No expone passwordHash', () => pm.expect(pm.response.json().data).to.not.have.property('passwordHash'));"] } }],
+          "request": { "method": "DELETE", "header": [], "url": { "raw": "{{baseUrl}}/api/users/{{userId}}", "host": ["{{baseUrl}}"], "path": ["api", "users", "{{userId}}"] } }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "productId", "value": "" },
+    { "key": "categoryId", "value": "" },
+    { "key": "categorySlug", "value": "" },
+    { "key": "userId", "value": "" },
+    { "key": "userEmail", "value": "" },
+    { "key": "testPassword", "value": "" }
+  ]
+}
