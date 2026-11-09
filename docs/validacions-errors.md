@@ -25,7 +25,7 @@ Les operacions correctes retornen 200 per consultes i modificacions, 201 en crea
 
 ## Casos per reproduir a local
 
-Cal tenir MongoDB local i l'API en execució amb `MONGO_URI` configurada. `localOnly` bloqueja `/api/users` si `NODE_ENV=production` o si la petició no arriba per loopback. Les dades següents són fictícies. Amb PowerShell es poden enviar les peticions amb `Invoke-RestMethod`; per veure també el cos d'error, capturar `$_.ErrorDetails.Message`.
+Cal tenir MongoDB local i l'API en execució amb `MONGO_URI` configurada. `localOnly` bloqueja les operacions CRUD d'usuaris si `NODE_ENV=production` o si la petició no arriba per loopback. Les rutes públiques de registre (`/api/users/registro`, `/api/users/register`) i login (`/api/users/login`) es declaren abans d'aquest middleware. Les dades següents són fictícies. Amb PowerShell es poden enviar les peticions amb `Invoke-RestMethod`; per veure també el cos d'error, capturar `$_.ErrorDetails.Message`.
 
 ### 1. Crear categoria sense nom
 

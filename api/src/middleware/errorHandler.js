@@ -43,6 +43,11 @@ const errorHandler = (err, req, res, next) => {
     details = err.details || null;
   }
 
+  if (err.code === 'INVALID_CREDENTIALS') {
+    code = err.code;
+    message = err.message;
+  }
+
   if (statusCode === 404) {
     code = 'NOT_FOUND';
     message = err.message || 'Recurso no encontrado';

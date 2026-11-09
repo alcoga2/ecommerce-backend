@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
 
 // Definimos la estructura de la información que guardaremos para cada usuario
 const userSchema = new mongoose.Schema(
@@ -55,8 +56,12 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-// Crea un índice en la base de datos para que buscar un usuario por email sea súper rápido
-userSchema.index({ email: 1 });
+// Abans de desar, xifra la contrasenya només si ha canviat.
+userSchema.pre('save', async function () {
+  if (!this.isModified('passwordHash')) return;
+  const salt = await bcrypt.genSalt(12);
+  this.passwordHash = await bcrypt.hash(this.passwordHash, salt);
+});
 
 // Ocultar passwordHash en las respuestas JSON
 userSchema.methods.toJSON = function () {

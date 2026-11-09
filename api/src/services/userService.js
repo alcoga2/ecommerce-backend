@@ -1,6 +1,43 @@
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const { parseListQuery } = require('../utils/listQuery');
+
+const getJwtSecret = () => {
+  if (!process.env.JWT_SECRET) {
+    const error = new Error('Falta configurar JWT_SECRET');
+    error.statusCode = 500;
+    error.code = 'INTERNAL_SERVER_ERROR';
+    throw error;
+  }
+  return process.env.JWT_SECRET;
+};
+
+const loginUser = async (credentials = {}) => {
+  const { email, password } = credentials && typeof credentials === 'object' ? credentials : {};
+  if (typeof email !== 'string' || typeof password !== 'string' || !email.trim() || !password) {
+    const error = new Error('Email y contraseña son obligatorios');
+    error.statusCode = 400;
+    error.code = 'BAD_REQUEST';
+    throw error;
+  }
+
+  const user = await User.findOne({ email: email.trim().toLowerCase() }).select('+passwordHash');
+  const passwordMatches = user && await bcrypt.compare(password, user.passwordHash);
+  if (!user || !passwordMatches || !user.active) {
+    const error = new Error('Email o contraseña incorrectos');
+    error.statusCode = 401;
+    error.code = 'INVALID_CREDENTIALS';
+    throw error;
+  }
+
+  const token = jwt.sign(
+    { role: user.role },
+    getJwtSecret(),
+    { subject: user.id, expiresIn: '1h' }
+  );
+  return { user, token };
+};
 
 const USER_FIELDS = ['name', 'email', 'password'];
 const pickUserFields = (data, { rejectUnknown = false } = {}) => {
@@ -40,16 +77,19 @@ const prepareUserData = async (data) => {
       error.details = [{ field: 'password', message: error.message }];
       throw error;
     }
-    fields.passwordHash = await bcrypt.hash(fields.password, 12);
+    // El modelo cifra este valor en su hook pre('save').
+    fields.passwordHash = fields.password;
     delete fields.password;
   }
   return fields;
 };
 
-const createUser = async (data) => {
+const registerUser = async (data) => {
   const fields = await prepareUserData(pickUserFields(data, { rejectUnknown: true }));
   return User.create({ name: fields.name, email: fields.email, passwordHash: fields.passwordHash });
 };
+// Alias para conservar la operación CRUD existente.
+const createUser = registerUser;
 
 const getAllUsers = async (query = {}) => {
   const options = parseListQuery(query, ['name', 'email', 'createdAt']);
@@ -71,11 +111,12 @@ const getUserById = async (id) => User.findById(id);
 
 const updateUser = async (id, data) => {
   const fields = await prepareUserData(pickUserFields(data, { rejectUnknown: true }));
-  const updates = {};
+  const user = await User.findById(id).select('+passwordHash');
+  if (!user) return null;
   for (const field of ['name', 'email', 'passwordHash']) {
-    if (Object.prototype.hasOwnProperty.call(fields, field)) updates[field] = fields[field];
+    if (Object.prototype.hasOwnProperty.call(fields, field)) user[field] = fields[field];
   }
-  return User.findByIdAndUpdate(id, updates, { new: true, runValidators: true });
+  return user.save();
 };
 
 const deactivateUser = async (id) => User.findByIdAndUpdate(
@@ -84,4 +125,4 @@ const deactivateUser = async (id) => User.findByIdAndUpdate(
   { new: true, runValidators: true }
 );
 
-module.exports = { createUser, getAllUsers, getUserById, updateUser, deactivateUser };
+module.exports = { createUser, registerUser, loginUser, getAllUsers, getUserById, updateUser, deactivateUser };

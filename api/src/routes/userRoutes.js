@@ -3,6 +3,9 @@ const userController = require('../controllers/userController');
 const localOnly = require('../middleware/localOnly');
 
 const router = express.Router();
+router.post('/registro', userController.registerUser);
+router.post('/register', userController.registerUser);
+router.post('/login', userController.loginUser);
 router.use(localOnly);
 router.post('/', userController.createUser);
 router.get('/', userController.getAllUsers);
